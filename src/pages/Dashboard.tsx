@@ -1,10 +1,12 @@
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { Filters } from "@/components/dashboard/Filters";
 import { Layout } from "@/components/layout/Layout";
+import { ProductDetailsDrawer } from "@/components/products/ProductDetailsDrawer";
 import { ProductsTable } from "@/components/products/ProductsTable";
 import { ErrorPage } from "@/components/ui/ErrorPage";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useKPIs } from "@/hooks/useKPIs";
+import { useTransferStock, useUpdateDemand } from "@/hooks/useMutations";
 import { useProducts } from "@/hooks/useProducts";
 import type { Product } from "@/types/graphql";
 import { useState } from "react";
@@ -14,6 +16,8 @@ export function Dashboard() {
   const [searchInput, setSearchInput] = useState("");
   const [warehouseFilter, setWarehouseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Debounce search input
   const debouncedSearch = useDebounce(searchInput, 300);
@@ -55,9 +59,26 @@ export function Dashboard() {
     setStatusFilter("all");
   };
 
+  // Mutation hooks
+  const updateDemandMutation = useUpdateDemand();
+  const transferStockMutation = useTransferStock();
+
   const handleProductRowClick = (product: Product) => {
-    // TODO: Open product details drawer
-    console.log("Product clicked:", product);
+    setSelectedProduct(product);
+    setDrawerOpen(true);
+  };
+
+  const handleUpdateDemand = (id: string, demand: number) => {
+    updateDemandMutation.mutate({ id, demand });
+  };
+
+  const handleTransferStock = (
+    id: string,
+    from: string,
+    to: string,
+    qty: number
+  ) => {
+    transferStockMutation.mutate({ id, from, to, qty });
   };
 
   // Handle errors
@@ -106,6 +127,17 @@ export function Dashboard() {
           products={products}
           loading={productsLoading}
           onRowClick={handleProductRowClick}
+        />
+
+        <ProductDetailsDrawer
+          product={selectedProduct}
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          onUpdateDemand={handleUpdateDemand}
+          onTransferStock={handleTransferStock}
+          loading={
+            updateDemandMutation.isPending || transferStockMutation.isPending
+          }
         />
       </div>
     </Layout>
