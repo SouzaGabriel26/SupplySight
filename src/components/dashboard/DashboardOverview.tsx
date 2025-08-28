@@ -1,6 +1,6 @@
+import type { KPI, Product } from "@/types/graphql";
 import { KPICards } from "./KPICards";
 import { StockDemandChart } from "./StockDemandChart";
-import type { Product, KPI } from "@/types/graphql";
 
 interface DashboardOverviewProps {
   products: Product[];
@@ -19,7 +19,7 @@ export function DashboardOverview({
     <div className="space-y-6">
       {/* KPI Cards */}
       <KPICards products={products} loading={productsLoading} />
-      
+
       {/* Stock vs Demand Chart */}
       <StockDemandChart kpis={kpis} loading={kpisLoading} />
     </div>
