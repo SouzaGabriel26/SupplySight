@@ -99,7 +99,7 @@ export function ProductDetailsDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[500px] sm:w-[600px] overflow-y-auto">
+      <SheetContent className="w-full max-w-md sm:max-w-lg md:max-w-xl overflow-y-auto shadow-2xl border-l">
         <SheetHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -114,17 +114,16 @@ export function ProductDetailsDrawer({
               variant="ghost"
               size="sm"
               onClick={() => onOpenChange(false)}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 transition-all duration-200 hover:bg-gray-100 hover:scale-110 active:scale-95"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         </SheetHeader>
-
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-6 content-fade-in">
           {/* Product Status */}
           <div
-            className={`p-4 rounded-lg border ${
+            className={`p-4 rounded-lg border transition-all duration-300 hover:shadow-md ${
               isCritical ? "bg-red-50 border-red-200" : "bg-gray-50"
             }`}
           >
@@ -147,7 +146,7 @@ export function ProductDetailsDrawer({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex space-x-1 border-b">
+          <div className="flex flex-wrap gap-1 border-b transition-all duration-300">
             {[
               { id: "details", label: "Details", icon: Package },
               { id: "demand", label: "Update Demand", icon: TrendingUp },
@@ -162,10 +161,11 @@ export function ProductDetailsDrawer({
                   onClick={() =>
                     setActiveTab(tab.id as "details" | "demand" | "transfer")
                   }
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-1 transition-all duration-200 hover:scale-105 text-xs sm:text-sm"
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
+                  <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.id}</span>
                 </Button>
               );
             })}
@@ -175,7 +175,7 @@ export function ProductDetailsDrawer({
           <div className="space-y-4">
             {activeTab === "details" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium text-gray-700">
                       Current Stock
@@ -261,14 +261,18 @@ export function ProductDetailsDrawer({
 
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm text-blue-800">
+                    <TrendingUp className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-blue-800 break-words">
                       Current demand: {formatNumber(product.demand)} units
                     </span>
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  disabled={loading}
+                >
                   {loading ? "Updating..." : "Update Demand"}
                 </Button>
               </form>
@@ -384,15 +388,19 @@ export function ProductDetailsDrawer({
 
                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <TrendingDown className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-yellow-800">
+                    <TrendingDown className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                    <span className="text-sm text-yellow-800 break-words">
                       Available for transfer: {formatNumber(product.stock)}{" "}
                       units
                     </span>
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  disabled={loading}
+                >
                   {loading ? "Transferring..." : "Transfer Stock"}
                 </Button>
               </form>

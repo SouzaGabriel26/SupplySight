@@ -245,7 +245,7 @@ export function ProductsTable({
                 return (
                   <TableRow
                     key={product.id}
-                    className={`cursor-pointer hover:bg-gray-50 ${
+                    className={`cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:shadow-sm hover:scale-[1.01] ${
                       isCritical ? "bg-red-50" : ""
                     }`}
                     onClick={() => onRowClick?.(product)}
