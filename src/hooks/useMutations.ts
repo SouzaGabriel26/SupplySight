@@ -2,6 +2,7 @@ import { client } from "@/lib/apollo";
 import { TRANSFER_STOCK, UPDATE_DEMAND } from "@/lib/graphql";
 import type { Product } from "@/types/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "./useToast";
 
 interface UpdateDemandResponse {
   updateDemand: Product;
@@ -25,6 +26,7 @@ interface TransferStockVariables {
 
 export function useUpdateDemand() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, demand }: UpdateDemandVariables) => {
@@ -52,21 +54,34 @@ export function useUpdateDemand() {
       // Return a context object with the snapshotted value
       return { previousProducts };
     },
-    onError: (_err, _variables, context) => {
+    onError: (error, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousProducts) {
         queryClient.setQueryData(["products"], context.previousProducts);
       }
+      addToast({
+        type: "error",
+        title: "Failed to transfer stock",
+        message: error.message || "An error occurred while transferring stock",
+      });
     },
     onSettled: () => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onSuccess: () => {
+      addToast({
+        type: "success",
+        title: "Demand updated successfully",
+        message: "The product demand has been updated",
+      });
     },
   });
 }
 
 export function useTransferStock() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, from, to, qty }: TransferStockVariables) => {
@@ -96,15 +111,27 @@ export function useTransferStock() {
       // Return a context object with the snapshotted value
       return { previousProducts };
     },
-    onError: (_err, _variables, context) => {
+    onError: (error, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousProducts) {
         queryClient.setQueryData(["products"], context.previousProducts);
       }
+      addToast({
+        type: "error",
+        title: "Failed to update demand",
+        message: error.message || "An error occurred while updating demand",
+      });
     },
     onSettled: () => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onSuccess: () => {
+      addToast({
+        type: "success",
+        title: "Stock transferred successfully",
+        message: "The stock has been transferred to the new warehouse",
+      });
     },
   });
 }

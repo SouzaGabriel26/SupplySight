@@ -69,7 +69,16 @@ export function Dashboard() {
   };
 
   const handleUpdateDemand = (id: string, demand: number) => {
-    updateDemandMutation.mutate({ id, demand });
+    updateDemandMutation.mutate(
+      { id, demand },
+      {
+        onSuccess: () => {
+          // Close drawer after successful update
+          setDrawerOpen(false);
+          setSelectedProduct(null);
+        },
+      }
+    );
   };
 
   const handleTransferStock = (
@@ -78,7 +87,16 @@ export function Dashboard() {
     to: string,
     qty: number
   ) => {
-    transferStockMutation.mutate({ id, from, to, qty });
+    transferStockMutation.mutate(
+      { id, from, to, qty },
+      {
+        onSuccess: () => {
+          // Close drawer after successful transfer
+          setDrawerOpen(false);
+          setSelectedProduct(null);
+        },
+      }
+    );
   };
 
   // Handle errors

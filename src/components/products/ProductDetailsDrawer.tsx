@@ -77,12 +77,16 @@ export function ProductDetailsDrawer({
   const handleUpdateDemand = (data: UpdateDemandForm) => {
     if (product && onUpdateDemand) {
       onUpdateDemand(product.id, data.demand);
+      // Reset form
+      updateDemandForm.reset();
     }
   };
 
   const handleTransferStock = (data: TransferStockForm) => {
     if (product && onTransferStock) {
       onTransferStock(product.id, data.from, data.to, data.qty);
+      // Reset form
+      transferStockForm.reset();
     }
   };
 
