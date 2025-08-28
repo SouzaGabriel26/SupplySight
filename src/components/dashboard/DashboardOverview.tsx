@@ -1,3 +1,4 @@
+import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 import type { KPI, Product } from "@/types/graphql";
 import { KPICards } from "./KPICards";
 import { StockDemandChart } from "./StockDemandChart";
@@ -15,6 +16,16 @@ export function DashboardOverview({
   productsLoading,
   kpisLoading,
 }: DashboardOverviewProps) {
+  // Show skeleton loaders while loading
+  if (productsLoading || kpisLoading) {
+    return (
+      <div className="space-y-6">
+        <SkeletonLoader type="card" />
+        <SkeletonLoader type="chart" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}

@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWarehouses } from "@/hooks/useWarehouses";
 import { Filter, Search, X } from "lucide-react";
+import { memo, useRef } from "react";
 
 interface FiltersProps {
   search: string;
@@ -18,21 +19,24 @@ interface FiltersProps {
   onSearchChange: (value: string) => void;
   onWarehouseChange: (value: string) => void;
   onStatusChange: (value: string) => void;
+  onApplyFilters: () => void;
   onClearFilters: () => void;
   loading?: boolean;
 }
 
-export function Filters({
+export const Filters = memo(function Filters({
   search,
   warehouse,
   status,
   onSearchChange,
   onWarehouseChange,
   onStatusChange,
+  onApplyFilters,
   onClearFilters,
   loading = false,
 }: FiltersProps) {
   const { warehouses, loading: warehousesLoading } = useWarehouses();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const hasActiveFilters = search || warehouse !== "all" || status !== "all";
 
@@ -63,9 +67,15 @@ export function Filters({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
+              ref={searchInputRef}
               placeholder="Search by name, SKU, or ID..."
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onApplyFilters();
+                }
+              }}
               className="pl-10"
               disabled={loading}
             />
@@ -125,6 +135,19 @@ export function Filters({
         </div>
       </div>
 
+      {/* Filter Actions */}
+      <div className="md:col-span-3 flex justify-between items-center">
+        <div className="text-sm text-gray-500">
+          {search && "🔍 Search ready to apply"}
+        </div>
+        <div className="flex space-x-2">
+          <Button onClick={onApplyFilters} disabled={loading} className="px-6">
+            <Filter className="h-4 w-4 mr-2" />
+            Apply Filters
+          </Button>
+        </div>
+      </div>
+
       {/* Active Filters Display */}
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2 pt-2 border-t">
@@ -171,4 +194,4 @@ export function Filters({
       )}
     </div>
   );
-}
+});

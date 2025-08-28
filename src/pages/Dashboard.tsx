@@ -4,30 +4,36 @@ import { Layout } from "@/components/layout/Layout";
 import { ProductDetailsDrawer } from "@/components/products/ProductDetailsDrawer";
 import { ProductsTable } from "@/components/products/ProductsTable";
 import { ErrorPage } from "@/components/ui/ErrorPage";
-import { useDebounce } from "@/hooks/useDebounce";
+import { NetworkError } from "@/components/ui/NetworkError";
+
 import { useKPIs } from "@/hooks/useKPIs";
 import { useTransferStock, useUpdateDemand } from "@/hooks/useMutations";
 import { useProducts } from "@/hooks/useProducts";
 import type { Product } from "@/types/graphql";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export function Dashboard() {
   const [dateRange, setDateRange] = useState("30d");
   const [searchInput, setSearchInput] = useState("");
   const [warehouseFilter, setWarehouseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    status: "all",
+    warehouse: "",
+  });
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Debounce search input
-  const debouncedSearch = useDebounce(searchInput, 300);
-
-  // Combine filters for API call
-  const filters = {
-    search: debouncedSearch,
-    status: statusFilter,
-    warehouse: warehouseFilter === "all" ? "" : warehouseFilter,
-  };
+  // Use applied filters for API calls - no debounce, only manual apply
+  const filters = useMemo(
+    () => ({
+      search: appliedFilters.search,
+      status: appliedFilters.status,
+      warehouse: appliedFilters.warehouse,
+    }),
+    [appliedFilters.search, appliedFilters.status, appliedFilters.warehouse]
+  );
 
   // Fetch data using custom hooks
   const {
@@ -41,22 +47,35 @@ export function Dashboard() {
     setDateRange(range);
   };
 
-  const handleSearchChange = (value: string) => {
+  const handleSearchChange = useCallback((value: string) => {
     setSearchInput(value);
-  };
+  }, []);
 
-  const handleWarehouseChange = (value: string) => {
+  const handleWarehouseChange = useCallback((value: string) => {
     setWarehouseFilter(value);
-  };
+  }, []);
 
-  const handleStatusChange = (value: string) => {
+  const handleStatusChange = useCallback((value: string) => {
     setStatusFilter(value);
+  }, []);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({
+      search: searchInput,
+      status: statusFilter,
+      warehouse: warehouseFilter === "all" ? "" : warehouseFilter,
+    });
   };
 
   const handleClearFilters = () => {
     setSearchInput("");
     setWarehouseFilter("all");
     setStatusFilter("all");
+    setAppliedFilters({
+      search: "",
+      status: "all",
+      warehouse: "",
+    });
   };
 
   // Mutation hooks
@@ -99,22 +118,28 @@ export function Dashboard() {
     );
   };
 
-  // Handle errors
-  if (productsError) {
-    return (
-      <ErrorPage
-        title="Error Loading Products"
-        message={productsError.message || "Failed to load product data"}
-        onRetry={() => window.location.reload()}
-      />
-    );
-  }
+  // Handle errors with enhanced error handling
+  if (productsError || kpisError) {
+    const error = productsError || kpisError;
+    const isNetworkError =
+      error?.message?.includes("Network") || error?.message?.includes("fetch");
 
-  if (kpisError) {
+    if (isNetworkError) {
+      return (
+        <NetworkError
+          message={error?.message}
+          onRetry={() => window.location.reload()}
+        />
+      );
+    }
+
     return (
       <ErrorPage
-        title="Error Loading KPIs"
-        message={kpisError.message || "Failed to load KPI data"}
+        title="Failed to load dashboard data"
+        message={
+          error?.message ||
+          "There was an error loading the dashboard data. Please try again."
+        }
         onRetry={() => window.location.reload()}
       />
     );
@@ -137,6 +162,7 @@ export function Dashboard() {
           onSearchChange={handleSearchChange}
           onWarehouseChange={handleWarehouseChange}
           onStatusChange={handleStatusChange}
+          onApplyFilters={handleApplyFilters}
           onClearFilters={handleClearFilters}
           loading={productsLoading}
         />

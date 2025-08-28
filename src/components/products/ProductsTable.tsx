@@ -12,7 +12,7 @@ import {
 import { formatNumber, getStatusColor, getStatusIcon } from "@/lib/utils";
 import type { Product } from "@/types/graphql";
 import { ChevronDown, ChevronUp, Package } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface ProductsTableProps {
   products: Product[];
@@ -40,49 +40,53 @@ export function ProductsTable({
     return "critical";
   };
 
-  // Sort products
-  const sortedProducts = [...products].sort((a, b) => {
-    let aValue: string | number;
-    let bValue: string | number;
+  // Memoize the sorted products to prevent unnecessary re-renders
+  const sortedProducts = useMemo(() => {
+    if (!products) return [];
 
-    switch (sortField) {
-      case "name":
-        aValue = a.name;
-        bValue = b.name;
-        break;
-      case "sku":
-        aValue = a.sku;
-        bValue = b.sku;
-        break;
-      case "warehouse":
-        aValue = a.warehouse;
-        bValue = b.warehouse;
-        break;
-      case "stock":
-        aValue = a.stock;
-        bValue = b.stock;
-        break;
-      case "demand":
-        aValue = a.demand;
-        bValue = b.demand;
-        break;
-      case "status":
-        aValue = getProductStatus(a);
-        bValue = getProductStatus(b);
-        break;
-      default:
-        aValue = a.name;
-        bValue = b.name;
-    }
+    return [...products].sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
 
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      const comparison = aValue.localeCompare(bValue);
-      return sortDirection === "asc" ? comparison : -comparison;
-    } else {
-      const comparison = (aValue as number) - (bValue as number);
-      return sortDirection === "asc" ? comparison : -comparison;
-    }
-  });
+      switch (sortField) {
+        case "name":
+          aValue = a.name;
+          bValue = b.name;
+          break;
+        case "sku":
+          aValue = a.sku;
+          bValue = b.sku;
+          break;
+        case "warehouse":
+          aValue = a.warehouse;
+          bValue = b.warehouse;
+          break;
+        case "stock":
+          aValue = a.stock;
+          bValue = b.stock;
+          break;
+        case "demand":
+          aValue = a.demand;
+          bValue = b.demand;
+          break;
+        case "status":
+          aValue = getProductStatus(a);
+          bValue = getProductStatus(b);
+          break;
+        default:
+          aValue = a.name;
+          bValue = b.name;
+      }
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue);
+        return sortDirection === "asc" ? comparison : -comparison;
+      } else {
+        const comparison = (aValue as number) - (bValue as number);
+        return sortDirection === "asc" ? comparison : -comparison;
+      }
+    });
+  }, [products, sortField, sortDirection]);
 
   // Pagination
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
