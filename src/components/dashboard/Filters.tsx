@@ -34,7 +34,7 @@ export function Filters({
 }: FiltersProps) {
   const { warehouses, loading: warehousesLoading } = useWarehouses();
 
-  const hasActiveFilters = search || warehouse || status !== "all";
+  const hasActiveFilters = search || warehouse !== "all" || status !== "all";
 
   return (
     <div className="bg-white rounded-lg border p-4 space-y-4">
@@ -87,7 +87,7 @@ export function Filters({
                 <SelectValue placeholder="All warehouses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All warehouses</SelectItem>
+                <SelectItem value="all">All warehouses</SelectItem>
                 {warehouses.map((warehouse) => (
                   <SelectItem key={warehouse.code} value={warehouse.code}>
                     {warehouse.name} ({warehouse.code})
@@ -141,13 +141,13 @@ export function Filters({
               </Button>
             </div>
           )}
-          {warehouse && (
+          {warehouse !== "all" && (
             <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm">
               <span>Warehouse: {warehouse}</span>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onWarehouseChange("")}
+                onClick={() => onWarehouseChange("all")}
                 className="h-4 w-4 p-0 hover:bg-green-200"
               >
                 <X className="h-3 w-3" />

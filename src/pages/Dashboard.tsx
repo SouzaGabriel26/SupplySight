@@ -1,16 +1,18 @@
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { Filters } from "@/components/dashboard/Filters";
 import { Layout } from "@/components/layout/Layout";
+import { ProductsTable } from "@/components/products/ProductsTable";
 import { ErrorPage } from "@/components/ui/ErrorPage";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useKPIs } from "@/hooks/useKPIs";
 import { useProducts } from "@/hooks/useProducts";
+import type { Product } from "@/types/graphql";
 import { useState } from "react";
 
 export function Dashboard() {
   const [dateRange, setDateRange] = useState("30d");
   const [searchInput, setSearchInput] = useState("");
-  const [warehouseFilter, setWarehouseFilter] = useState("");
+  const [warehouseFilter, setWarehouseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   // Debounce search input
@@ -20,7 +22,7 @@ export function Dashboard() {
   const filters = {
     search: debouncedSearch,
     status: statusFilter,
-    warehouse: warehouseFilter,
+    warehouse: warehouseFilter === "all" ? "" : warehouseFilter,
   };
 
   // Fetch data using custom hooks
@@ -49,8 +51,13 @@ export function Dashboard() {
 
   const handleClearFilters = () => {
     setSearchInput("");
-    setWarehouseFilter("");
+    setWarehouseFilter("all");
     setStatusFilter("all");
+  };
+
+  const handleProductRowClick = (product: Product) => {
+    // TODO: Open product details drawer
+    console.log("Product clicked:", product);
   };
 
   // Handle errors
@@ -95,7 +102,11 @@ export function Dashboard() {
           loading={productsLoading}
         />
 
-        {/* TODO: Add Products Table component here */}
+        <ProductsTable
+          products={products}
+          loading={productsLoading}
+          onRowClick={handleProductRowClick}
+        />
       </div>
     </Layout>
   );
