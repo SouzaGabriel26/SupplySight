@@ -2,6 +2,17 @@
 
 A comprehensive supply chain management platform that provides real-time inventory tracking, demand forecasting, and warehouse management capabilities through an intuitive and responsive user interface.
 
+## 🎥 Demo
+
+<video width="100%" controls>
+  <source src="https://github.com/SouzaGabriel26/SupplySight/blob/main/public/video-demo.mp4?raw=true" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+_Watch the demo to see the dashboard in action - featuring real-time inventory tracking, demand management, and stock transfers_
+
+> **Note**: If the video doesn't play, you can also [download it directly](https://github.com/SouzaGabriel26/SupplySight/blob/main/public/video-demo.mp4?raw=true).
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
