@@ -55,7 +55,7 @@ export function Toast({
   return (
     <div
       className={cn(
-        "fixed top-4 right-4 z-50 w-full max-w-sm transform transition-all duration-300 ease-out",
+        "fixed top-4 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] transform transition-all duration-300 ease-out sm:right-4 right-2",
         isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
       )}
     >
@@ -94,7 +94,7 @@ interface ToastContainerProps {
 
 export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-2 sm:right-4 z-50 space-y-2 max-h-[calc(100vh-2rem)] overflow-hidden">
       {toasts.map((toast, index) => (
         <div
           key={toast.id}

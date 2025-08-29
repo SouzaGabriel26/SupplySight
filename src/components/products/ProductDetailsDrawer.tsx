@@ -24,7 +24,7 @@ import { transferStockSchema, updateDemandSchema } from "@/lib/validations";
 import type { Product } from "@/types/graphql";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Package, TrendingDown, TrendingUp, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -68,16 +68,18 @@ export function ProductDetailsDrawer({
   const transferStockForm = useForm<TransferStockForm>({
     resolver: zodResolver(transferStockSchema),
     defaultValues: {
-      from: product?.warehouse || "",
+      from: "",
       to: "",
       qty: 0,
     },
   });
 
-  if (product) {
-    updateDemandForm.setValue("demand", product.demand);
-    transferStockForm.setValue("from", product.warehouse);
-  }
+  useEffect(() => {
+    if (product) {
+      updateDemandForm.setValue("demand", product.demand);
+      transferStockForm.setValue("from", product.warehouse);
+    }
+  }, [product, updateDemandForm, transferStockForm]);
 
   const handleUpdateDemand = (data: UpdateDemandForm) => {
     if (product && onUpdateDemand) {
