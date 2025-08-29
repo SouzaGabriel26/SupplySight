@@ -1,6 +1,6 @@
-# 🚀 SupplySight Dashboard
+# SupplySight Dashboard
 
-A modern, responsive inventory dashboard built with React, TypeScript, and GraphQL.
+A comprehensive supply chain management platform that provides real-time inventory tracking, demand forecasting, and warehouse management capabilities through an intuitive and responsive user interface.
 
 ## 🛠️ Tech Stack
 
@@ -13,36 +13,31 @@ A modern, responsive inventory dashboard built with React, TypeScript, and Graph
 - **Routing**: React Router DOM
 - **Icons**: Lucide React
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd supplysight-dashboard
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development servers**
+
    ```bash
-   # Option 1: Start both servers with the convenience script
-   npm start
-   
-   # Option 2: Start servers separately
-   npm run server    # GraphQL server on port 4000
-   npm run dev       # Vite dev server on port 5173
-   
-   # Option 3: Start both with concurrently
    npm run dev:full
    ```
 
@@ -50,28 +45,30 @@ A modern, responsive inventory dashboard built with React, TypeScript, and Graph
    - Frontend: http://localhost:5173
    - GraphQL Playground: http://localhost:4000/graphql
 
-## 📊 Features
+## 🎯 Key Features
 
-### ✅ Completed
-- [x] Project setup with Vite + TypeScript
-- [x] Tailwind CSS + shadcn/ui integration
-- [x] Mock GraphQL server with Apollo Server
-- [x] Apollo Client setup with React Query
-- [x] Dashboard layout with header and navigation
-- [x] KPI cards (Total Stock, Total Demand, Fill Rate)
-- [x] Stock vs Demand trend chart
-- [x] Responsive design
-- [x] Loading states and error handling
-- [x] Routing setup
+### Core Functionality
 
-### 🚧 In Progress
-- [ ] Filters and search functionality
-- [ ] Products table with pagination
-- [ ] Product details drawer
-- [ ] Update demand and transfer stock forms
-- [ ] Real-time data updates
-- [ ] Performance optimizations
-- [ ] Testing suite
+- **Real-time Inventory Dashboard**: Live tracking of stock levels across all warehouses
+- **Demand Management**: Update and track product demand with instant feedback
+- **Stock Transfers**: Seamless inventory movement between warehouses
+- **KPI Monitoring**: Key performance indicators with trend analysis
+- **Advanced Filtering**: Search and filter products by multiple criteria
+
+### User Experience
+
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Keyboard Navigation**: Full accessibility support with keyboard shortcuts
+- **Real-time Updates**: Optimistic UI updates with error handling
+- **Loading States**: Skeleton loaders and smooth transitions
+- **Error Handling**: Comprehensive error boundaries and user-friendly messages
+
+### Performance
+
+- **Lazy Loading**: Component-level code splitting for faster initial loads
+- **Memoization**: Optimized re-renders with React.memo and useMemo
+- **Efficient Queries**: GraphQL with React Query for optimal data fetching
+- **Bundle Optimization**: Tree-shaking and code splitting
 
 ## 📁 Project Structure
 
@@ -86,15 +83,15 @@ src/
 ├── lib/                 # Utilities and configurations
 ├── pages/               # Page components
 ├── types/               # TypeScript type definitions
+├── contexts/            # React contexts
 └── data/                # Mock data
 ```
 
 ## 🔧 Available Scripts
 
-- `npm start` - Start both GraphQL and development servers
+- `npm run dev:full` - Start both GraphQL and development servers
 - `npm run dev` - Start Vite development server only
 - `npm run server` - Start GraphQL server only
-- `npm run dev:full` - Start both servers with concurrently
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
@@ -104,17 +101,20 @@ src/
 The mock GraphQL server provides the following operations:
 
 ### Queries
+
 - `products(search, status, warehouse)` - Get filtered products
 - `warehouses` - Get all warehouses
 - `kpis(range)` - Get KPI data for date range
 
 ### Mutations
+
 - `updateDemand(id, demand)` - Update product demand
 - `transferStock(id, from, to, qty)` - Transfer stock between warehouses
 
 ## 🎨 Design System
 
 The project uses shadcn/ui components with a custom theme:
+
 - **Colors**: Blue primary, semantic status colors
 - **Typography**: System fonts with proper hierarchy
 - **Spacing**: Consistent 4px grid system
@@ -123,11 +123,13 @@ The project uses shadcn/ui components with a custom theme:
 ## 🔍 Business Logic
 
 ### Status Calculation
+
 - 🟢 **Healthy**: `stock > demand`
 - 🟡 **Low**: `stock === demand`
 - 🔴 **Critical**: `stock < demand`
 
 ### Fill Rate Formula
+
 ```
 Fill Rate = (sum(min(stock, demand)) / sum(demand)) * 100%
 ```
@@ -135,6 +137,7 @@ Fill Rate = (sum(min(stock, demand)) / sum(demand)) * 100%
 ## 🚀 Deployment
 
 1. **Build the project**
+
    ```bash
    npm run build
    ```
@@ -154,8 +157,4 @@ Fill Rate = (sum(min(stock, demand)) / sum(demand)) * 100%
 
 ## 📝 License
 
-This project is part of a take-home challenge for SupplySight.
-
----
-
-Built with ❤️ using modern web technologies
+This project is licensed under the MIT License.
