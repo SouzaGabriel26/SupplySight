@@ -40,7 +40,6 @@ export function ProductsTable({
     return "critical";
   };
 
-  // Memoize the sorted products to prevent unnecessary re-renders
   const sortedProducts = useMemo(() => {
     if (!products) return [];
 
@@ -88,13 +87,11 @@ export function ProductsTable({
     });
   }, [products, sortField, sortDirection]);
 
-  // Pagination
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
-  // Handle sorting
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -102,10 +99,9 @@ export function ProductsTable({
       setSortField(field);
       setSortDirection("asc");
     }
-    setCurrentPage(1); // Reset to first page when sorting
+    setCurrentPage(1);
   };
 
-  // Sort indicator component
   const SortIndicator = ({ field }: { field: SortField }) => {
     if (sortField !== field) {
       return <ChevronUp className="h-4 w-4 text-gray-400" />;
@@ -253,6 +249,15 @@ export function ProductsTable({
                       isCritical ? "bg-red-50" : ""
                     }`}
                     onClick={() => onRowClick?.(product)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onRowClick?.(product);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View details for ${product.name}`}
                   >
                     <TableCell className="font-medium">
                       {product.name}

@@ -17,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
 import { useWarehouses } from "@/hooks/useWarehouses";
 import { formatNumber, getStatusColor, getStatusIcon } from "@/lib/utils";
 import { transferStockSchema, updateDemandSchema } from "@/lib/validations";
@@ -52,6 +53,11 @@ export function ProductDetailsDrawer({
   );
   const { warehouses } = useWarehouses();
 
+  useKeyboardNavigation({
+    onEscape: () => onOpenChange(false),
+    enabled: open,
+  });
+
   const updateDemandForm = useForm<UpdateDemandForm>({
     resolver: zodResolver(updateDemandSchema),
     defaultValues: {
@@ -68,7 +74,6 @@ export function ProductDetailsDrawer({
     },
   });
 
-  // Update form values when product changes
   if (product) {
     updateDemandForm.setValue("demand", product.demand);
     transferStockForm.setValue("from", product.warehouse);
@@ -77,7 +82,6 @@ export function ProductDetailsDrawer({
   const handleUpdateDemand = (data: UpdateDemandForm) => {
     if (product && onUpdateDemand) {
       onUpdateDemand(product.id, data.demand);
-      // Reset form
       updateDemandForm.reset();
     }
   };
@@ -85,7 +89,6 @@ export function ProductDetailsDrawer({
   const handleTransferStock = (data: TransferStockForm) => {
     if (product && onTransferStock) {
       onTransferStock(product.id, data.from, data.to, data.qty);
-      // Reset form
       transferStockForm.reset();
     }
   };

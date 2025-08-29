@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { KPI } from "@/types/graphql";
+import { memo, useMemo } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -17,7 +18,21 @@ interface StockDemandChartProps {
   loading: boolean;
 }
 
-export function StockDemandChart({ kpis, loading }: StockDemandChartProps) {
+export const StockDemandChart = memo(function StockDemandChart({
+  kpis,
+  loading,
+}: StockDemandChartProps) {
+  const chartData = useMemo(() => {
+    return kpis.map((kpi) => ({
+      date: new Date(kpi.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      stock: kpi.stock,
+      demand: kpi.demand,
+    }));
+  }, [kpis]);
+
   if (loading) {
     return (
       <Card>
@@ -30,15 +45,6 @@ export function StockDemandChart({ kpis, loading }: StockDemandChartProps) {
       </Card>
     );
   }
-
-  const chartData = kpis.map((kpi) => ({
-    date: new Date(kpi.date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-    stock: kpi.stock,
-    demand: kpi.demand,
-  }));
 
   return (
     <Card>
@@ -87,4 +93,4 @@ export function StockDemandChart({ kpis, loading }: StockDemandChartProps) {
       </CardContent>
     </Card>
   );
-}
+});

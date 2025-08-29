@@ -39,13 +39,11 @@ export function Toast({
   const Icon = toastIcons[type];
 
   useEffect(() => {
-    // Trigger entrance animation
     const timer = setTimeout(() => setIsVisible(true), 100);
 
-    // Auto-dismiss timer
     const dismissTimer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(() => onClose(id), 300); // Wait for exit animation
+      setTimeout(() => onClose(id), 300);
     }, duration);
 
     return () => {

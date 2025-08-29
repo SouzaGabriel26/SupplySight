@@ -16,7 +16,6 @@ export function DashboardOverview({
   productsLoading,
   kpisLoading,
 }: DashboardOverviewProps) {
-  // Show skeleton loaders while loading
   if (productsLoading || kpisLoading) {
     return (
       <div className="space-y-6">

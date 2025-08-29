@@ -1,10 +1,16 @@
 import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { Filters } from "@/components/dashboard/Filters";
 import { Layout } from "@/components/layout/Layout";
-import { ProductDetailsDrawer } from "@/components/products/ProductDetailsDrawer";
 import { ProductsTable } from "@/components/products/ProductsTable";
 import { ErrorPage } from "@/components/ui/ErrorPage";
 import { NetworkError } from "@/components/ui/NetworkError";
+import { lazy, Suspense } from "react";
+
+const ProductDetailsDrawer = lazy(() =>
+  import("@/components/products/ProductDetailsDrawer").then((module) => ({
+    default: module.ProductDetailsDrawer,
+  }))
+);
 
 import { useKPIs } from "@/hooks/useKPIs";
 import { useTransferStock, useUpdateDemand } from "@/hooks/useMutations";
@@ -25,7 +31,6 @@ export function Dashboard() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Use applied filters for API calls - no debounce, only manual apply
   const filters = useMemo(
     () => ({
       search: appliedFilters.search,
@@ -35,7 +40,6 @@ export function Dashboard() {
     [appliedFilters.search, appliedFilters.status, appliedFilters.warehouse]
   );
 
-  // Fetch data using custom hooks
   const {
     products,
     loading: productsLoading,
@@ -78,7 +82,6 @@ export function Dashboard() {
     });
   };
 
-  // Mutation hooks
   const updateDemandMutation = useUpdateDemand();
   const transferStockMutation = useTransferStock();
 
@@ -92,7 +95,6 @@ export function Dashboard() {
       { id, demand },
       {
         onSuccess: () => {
-          // Close drawer after successful update
           setDrawerOpen(false);
           setSelectedProduct(null);
         },
@@ -110,7 +112,6 @@ export function Dashboard() {
       { id, from, to, qty },
       {
         onSuccess: () => {
-          // Close drawer after successful transfer
           setDrawerOpen(false);
           setSelectedProduct(null);
         },
@@ -118,7 +119,6 @@ export function Dashboard() {
     );
   };
 
-  // Handle errors with enhanced error handling
   if (productsError || kpisError) {
     const error = productsError || kpisError;
     const isNetworkError =
@@ -173,16 +173,18 @@ export function Dashboard() {
           onRowClick={handleProductRowClick}
         />
 
-        <ProductDetailsDrawer
-          product={selectedProduct}
-          open={drawerOpen}
-          onOpenChange={setDrawerOpen}
-          onUpdateDemand={handleUpdateDemand}
-          onTransferStock={handleTransferStock}
-          loading={
-            updateDemandMutation.isPending || transferStockMutation.isPending
-          }
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProductDetailsDrawer
+            product={selectedProduct}
+            open={drawerOpen}
+            onOpenChange={setDrawerOpen}
+            onUpdateDemand={handleUpdateDemand}
+            onTransferStock={handleTransferStock}
+            loading={
+              updateDemandMutation.isPending || transferStockMutation.isPending
+            }
+          />
+        </Suspense>
       </div>
     </Layout>
   );

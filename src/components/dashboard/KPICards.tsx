@@ -3,25 +3,35 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber, formatPercentage } from "@/lib/utils";
 import type { Product } from "@/types/graphql";
 import { Package, Target, TrendingUp } from "lucide-react";
+import { memo, useMemo } from "react";
 
 interface KPICardsProps {
   products: Product[];
   loading: boolean;
 }
 
-export function KPICards({ products, loading }: KPICardsProps) {
-  const totalStock = products.reduce((sum, product) => sum + product.stock, 0);
-  const totalDemand = products.reduce(
-    (sum, product) => sum + product.demand,
-    0
-  );
+export const KPICards = memo(function KPICards({
+  products,
+  loading,
+}: KPICardsProps) {
+  const { totalStock, totalDemand, fillRate } = useMemo(() => {
+    const totalStock = products.reduce(
+      (sum, product) => sum + product.stock,
+      0
+    );
+    const totalDemand = products.reduce(
+      (sum, product) => sum + product.demand,
+      0
+    );
 
-  // Calculate fill rate: (sum(min(stock, demand)) / sum(demand)) * 100%
-  const totalFilled = products.reduce(
-    (sum, product) => sum + Math.min(product.stock, product.demand),
-    0
-  );
-  const fillRate = totalDemand > 0 ? (totalFilled / totalDemand) * 100 : 0;
+    const totalFilled = products.reduce(
+      (sum, product) => sum + Math.min(product.stock, product.demand),
+      0
+    );
+    const fillRate = totalDemand > 0 ? (totalFilled / totalDemand) * 100 : 0;
+
+    return { totalStock, totalDemand, fillRate };
+  }, [products]);
 
   if (loading) {
     return (
@@ -93,4 +103,4 @@ export function KPICards({ products, loading }: KPICardsProps) {
       </Card>
     </div>
   );
-}
+});
